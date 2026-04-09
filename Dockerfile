@@ -1,13 +1,10 @@
-FROM node:18 as build
+FROM python:3.10-slim
 
 WORKDIR /app
 
-COPY package.json .
-RUN npm install
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
-RUN npm run build
 
-FROM nginx:alpine
-
-COPY --from=build /app/build /usr/share/nginx/html
+CMD ["gunicorn", "weatherproject.wsgi:application", "--bind", "0.0.0.0:8000"]
